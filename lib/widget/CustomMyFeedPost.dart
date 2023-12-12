@@ -1,12 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:notification/pages/bloc/main_bloc.dart';
+import 'package:notification/pages/bloc/main_event.dart';
+import 'package:notification/pages/bloc/main_state.dart';
 import 'package:notification/styles/app_styles.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class CustomMyFeedPost extends StatelessWidget {
-  const CustomMyFeedPost({Key? key}) : super(key: key);
+  CustomMyFeedPost({Key? key}) : super(key: key);
+
+  final bloc = MainBloc();
 
   @override
   Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) {
+        return bloc;
+      },
+      child: BlocBuilder<MainBloc, MainState>(
+        builder: (context, state) {
+          print("building bloc");
+          return Root(context, state, bloc);
+        },
+      ),
+    );
+  }
+
+  Widget Root(BuildContext context, MainState state, MainBloc bloc) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
@@ -111,12 +131,8 @@ class CustomMyFeedPost extends StatelessWidget {
                       // Fifth Row (Replace "Your Text" with your content)
                       Row(
                         children: [
-                          SvgPicture.asset(
-                            'assets/icons/Paw2.svg',
-                            width: 36,
-                            height: 36,
-                          ),
-                          Text('12'),
+                          PawLikeWidget(bloc, state),
+                          PawTextWidget(state),
                           SizedBox(width: 16),
                           SvgPicture.asset(
                             'assets/icons/Icons2.svg',
@@ -141,5 +157,42 @@ class CustomMyFeedPost extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget PawLikeWidget(MainBloc bloc, MainState state) {
+    final iconIsntPressed = 'assets/icons/Paw2.svg';
+    final iconIsPressed = 'assets/icons/tabler-icon-share-3.svg';
+    if (state is IconPressedState) {
+      return GestureDetector(
+        onTap: () {
+          bloc.add(IconPressedEvent());
+        },
+        child: SvgPicture.asset(
+          iconIsPressed,
+          width: 36,
+          height: 36,
+        ),
+      );
+    } else {
+      return GestureDetector(
+        onTap: () {
+          bloc.add(IconPressedEvent());
+        },
+        child: SvgPicture.asset(
+          iconIsntPressed,
+          width: 36,
+          height: 36,
+        ),
+      );
+    }
+  }
+
+  Widget PawTextWidget(MainState state) {
+    print("state is ${state.runtimeType}");
+    if (state is IconPressedState) {
+      return Text(state.iconPressedNumber.toString());
+    } else {
+      return Text("saldkaslkd");
+    }
   }
 }

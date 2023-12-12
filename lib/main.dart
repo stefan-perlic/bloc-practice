@@ -28,8 +28,13 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
+    return Root(context);
+  }
+
+  Widget Root(BuildContext context) {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
